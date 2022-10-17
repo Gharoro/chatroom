@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import {
   Avatar,
   Button,
@@ -12,35 +12,61 @@ import { blue, grey } from "@mui/material/colors";
 import PersonIcon from "@mui/icons-material/Person";
 import SendIcon from "@mui/icons-material/Send";
 import { Messages } from "./Messages";
+import { v4 as uid } from "uuid";
+import { useAppDispatch } from "../store/hooks";
+import { addMessage } from "../store/messagesSlice";
+import { styles } from "../consts";
 
-export const ChatCard = () => {
+export const ChatCard = ({ user }) => {
+  const dispatch = useAppDispatch();
+  const [message, setMessage] = useState("");
+
+  const postMessage = () => {
+    if (message.trim() !== "") {
+      const date = new Date();
+      const newMessage = {
+        id: uid(),
+        message: message.trim(),
+        userId: user.id,
+        userName: user.name,
+        time: `${date.getHours()}:${date.getMinutes()}`,
+      };
+      dispatch(addMessage(newMessage));
+    }
+    setMessage("");
+  };
+
   return (
-    <Card sx={{ width: "25rem" }}>
+    <Card sx={{ width: "25rem" }} style={styles.cardStyle}>
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: blue[500] }} aria-label="current-user">
             <PersonIcon />
           </Avatar>
         }
-        title="John Doe"
-        style={{ background: "#2d4c6e", color: "#fff" }}
+        title={user.name}
+        style={{
+          background: "#2d4c6e",
+          color: "#fff",
+        }}
       />
-      <CardContent
-        style={{ background: blue[50], height: 400, overflowY: "auto" }}
-      >
-        <Messages />
+      <CardContent style={styles.cardContentStyle}>
+        <Messages userId={user.id} />
       </CardContent>
       <CardActions disableSpacing style={{ background: grey[50] }}>
         <TextField
           hiddenLabel
           id="filled-hidden-label-small"
-          variant="filled"
+          variant="standard"
           size="small"
+          multiline
           sx={{ width: "20rem" }}
           placeholder="Message"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
         />
-        <Button aria-label="send-message">
-          <SendIcon />
+        <Button aria-label="send-message" onClick={postMessage}>
+          <SendIcon style={{ color: "#2d4c6e" }} />
         </Button>
       </CardActions>
     </Card>
