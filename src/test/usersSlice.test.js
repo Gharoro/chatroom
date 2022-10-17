@@ -41,22 +41,4 @@ describe("Users Slice", () => {
     expect(reducer).toEqual([...mockPreviousState, newUser]);
     expect(reducer.length).toBe(3);
   });
-
-  it("should remove user from list when removeUser action is invoked", () => {
-    const mockUsersState = [
-      {
-        id: "123",
-        name: "Peter",
-      },
-      {
-        id: "567",
-        name: "Cleo",
-      },
-    ];
-
-    const reducer = usersReducer(mockUsersState, removeUser("123"));
-
-    expect(reducer).toEqual([mockUsersState[1]]);
-    expect(reducer.length).toBe(1);
-  });
 });
